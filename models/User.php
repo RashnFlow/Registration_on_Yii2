@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use Yii;
+use yii\base\Exception;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -106,5 +108,41 @@ class User extends ActiveRecord  implements IdentityInterface
         return $this->getAuthKey() == $authKey;
     }
 
+    public static function findByPasswordResetToken($token)
+    {
+        if (!static::isPasswordResetTokenValid($token))
+            return null;
 
+        return static::findOne([
+           'password_reset_token' => $token,
+           'status' => self::STATUS_ACTIVE
+        ]);
+    }
+
+    public static function isPasswordResetTokenValid($token)
+    {
+        if(empty($token))
+            return false;
+
+        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        return $timestamp + $expire >= time();
+    }
+
+    /**
+     * @throws \yii\base\Exception
+     */
+    public function generatePasswordResetToken()
+    {
+        try {
+            $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+        } catch (Exception $e) {
+
+        }
+    }
+
+    public function removePasswordResetToken()
+    {
+        $this->password_reset_token = null;
+    }
 }

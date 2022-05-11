@@ -34,6 +34,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'template' => "<div class=\"offset-lg-1 col-lg-3 custom-control custom-checkbox\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
         ]) ?>
 
+    <div style="color:#999;margin:1em 0">
+        If you forgot your password you can <?= Html::a('reset it', ['site/request-password-reset']) ?>.
+    </div>
+    
         <div class="form-group">
             <div class="offset-lg-1 col-lg-11">
                 <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
